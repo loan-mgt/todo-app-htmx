@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=T, initial-scale=1.0">
+    <title>Todo list</title>
+    <link rel="stylesheet" href="https://unpkg.com/chota@latest">
+</head>
+<script>
+    
+    /**
+     * This function is called after a todo is added
+     * @param {htmx:after-request} event - The event fired by htmx
+     */
+    function addTodoCallback(event) {
+        if (event.detail.successful) {
+            let from = document.querySelector('#add-todo-form');
+            from.reset();
+        }
+
+    }
+</script>
+<script src="https://unpkg.com/htmx.org@1.9.11"></script>
+
+<body style="margin: 2rem;">
+    <h1>Todo list</h1>
+
+    <div style="display: flex;">
+
+        <section>
+            <ul id="todos">
+                {{ range .todos }}
+                    {{ block "todo-list-element" . }}
+                        <li>
+                            <h3>{{ .Title }}</h3>
+                            <p>{{ .Done }} - {{ .Deadline}}</p>
+                        </li>
+                    {{ end }}
+
+                {{ end }}
+
+            </ul>
+        </section>
+        <section style="width: fit-content; margin-left: auto;">
+            <form id="add-todo-form" hx-post="/add" hx-target="#todos" hx-swap="beforeend" hx-indicator="#add-todo-loading-indicator"
+            hx-on::after-request="addTodoCallback(event)">
+                <label for="title">Title</label>
+                <input type="text" name="title" id="title">
+                <label for="deadline">Deadline</label>
+                <input type="date" name="deadline" id="deadline">
+                <button style="margin-top: 2rem;" type="submit">Add
+                    <span id="add-todo-loading-indicator" class="htmx-indicator">...</span></button>
+            </form>
+        </section>
+    </div>
+
+
+</body>
+
+</html>
